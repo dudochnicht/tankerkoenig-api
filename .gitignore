@@ -1,0 +1,50 @@
+# Dependencies
+vendor/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+var/
+logs/
+*.log
+
+# Cache
+.cache/
+cache/
+
+# PHPUnit
+.phpunit.cache/
+.phpunit.result.cache
+
+# PHPStan
+.phpstan/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Build
+build/
+dist/
+
+# OS
+.DS_Store
+desktop.ini
+
+# Composer
+composer.phar
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+#others
+*.txt

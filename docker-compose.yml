@@ -1,0 +1,10 @@
+services:
+  tankerkoenig:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - '8081:8080'
+    volumes:
+      - .:/app
+      - ./.env:/app/.env
