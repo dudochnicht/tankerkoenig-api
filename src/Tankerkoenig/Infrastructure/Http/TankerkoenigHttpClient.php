@@ -61,7 +61,7 @@ final class TankerkoenigHttpClient
 
         if ($this->config->isDebug()) {
             $this->logger->debug('Returned status code {code} and message {message}', [
-                'code' => $response->getStatusCode() ?? '',
+                'code' => $response->getStatusCode(),
                 'message' => $data['message'] ?? ''
             ]);
         }
