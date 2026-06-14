@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tankerkoenig\Application\UseCase\GasStationList;
 
-use App\Tankerkoenig\Application\Exception\TankerkoenigException;
+use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use App\Tankerkoenig\Domain\Repository\GasStationListRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

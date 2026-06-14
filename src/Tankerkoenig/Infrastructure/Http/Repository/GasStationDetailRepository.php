@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tankerkoenig\Infrastructure\Http\Repository;
 
-use App\Tankerkoenig\Application\Exception\TankerkoenigException;
+use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use App\Tankerkoenig\Domain\Model\GasStationDetail\StationDetail;
 use App\Tankerkoenig\Domain\Repository\GasStationDetailRepositoryInterface;
 use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail\StationDetailMapper;

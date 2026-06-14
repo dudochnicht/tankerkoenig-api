@@ -7,7 +7,7 @@ namespace App\Tests\Tankerkoenig\Application\UseCase\GasStationList;
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
 use App\Tankerkoenig\Application\UseCase\GasStationList\GetGasStationListRequest;
 use App\Tankerkoenig\Domain\Enum\FuelType;
-use App\Tankerkoenig\Domain\Enum\Sort;
+use App\Tankerkoenig\Domain\Enum\SortBy;
 use PHPUnit\Framework\TestCase;
 
 final class GetGasStationListRequestTest extends TestCase
@@ -19,7 +19,7 @@ final class GetGasStationListRequestTest extends TestCase
             lng   : 13.413215,
             radius: 5.0,
             type  : FuelType::DIESEL,
-            sort  : Sort::PRICE,
+            sort  : SortBy::PRICE,
         );
 
         $this->assertSame(52.521918, $request->getLat());
@@ -36,7 +36,7 @@ final class GetGasStationListRequestTest extends TestCase
             lng   : 13.413215,
             radius: 5.0,
             type  : FuelType::DIESEL,
-            sort  : Sort::PRICE,
+            sort  : SortBy::PRICE,
         );
     }
 
@@ -49,7 +49,7 @@ final class GetGasStationListRequestTest extends TestCase
             lng   : 13.413215,
             radius: 30.0, // > 25km
             type  : FuelType::DIESEL,
-            sort  : Sort::PRICE,
+            sort  : SortBy::PRICE,
         );
     }
 }

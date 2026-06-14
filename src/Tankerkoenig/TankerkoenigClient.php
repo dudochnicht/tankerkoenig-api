@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tankerkoenig;
 
-use App\Tankerkoenig\Application\Exception\TankerkoenigException;
 use App\Tankerkoenig\Application\UseCase\GasStationDetail\GasStationDetailUseCase;
 use App\Tankerkoenig\Application\UseCase\GasStationDetail\GetGasStationDetailRequest;
 use App\Tankerkoenig\Application\UseCase\GasStationDetail\GetGasStationDetailResponse;
@@ -14,6 +13,7 @@ use App\Tankerkoenig\Application\UseCase\GasStationList\GetGasStationListRespons
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GasStationPricesUseCase;
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesRequest;
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesResponse;
+use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail\OpeningTimeMapper;
 use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail\StationDetailMapper;
 use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationList\StationListMapper;

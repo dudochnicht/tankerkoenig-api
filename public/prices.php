@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
-use App\Tankerkoenig\Application\Exception\TankerkoenigException;
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesRequest;
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesResponse;
+use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use Symfony\Component\Dotenv\Dotenv;
 use App\Tankerkoenig\TankerkoenigClient;
 use App\Tankerkoenig\TankerkoenigConfig;

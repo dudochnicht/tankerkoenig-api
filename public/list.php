@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
-use App\Tankerkoenig\Application\Exception\TankerkoenigException;
 use App\Tankerkoenig\Application\UseCase\GasStationList\GetGasStationListRequest;
 use App\Tankerkoenig\Application\UseCase\GasStationList\GetGasStationListResponse;
 use Symfony\Component\Dotenv\Dotenv;
 use App\Tankerkoenig\Domain\Enum\FuelType;
-use App\Tankerkoenig\Domain\Enum\Sort;
+use App\Tankerkoenig\Domain\Enum\SortBy;
+use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use App\Tankerkoenig\TankerkoenigClient;
 use App\Tankerkoenig\TankerkoenigConfig;
 use Monolog\Handler\StreamHandler;
@@ -49,7 +49,7 @@ try {
         lng   : 13.438,
         radius: 5.0,
         type  : FuelType::DIESEL,
-        sort  : Sort::PRICE,
+        sort  : SortBy::PRICE,
     );
 
     /** @var GetGasStationListResponse $response */

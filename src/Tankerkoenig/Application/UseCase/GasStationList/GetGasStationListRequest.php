@@ -6,7 +6,7 @@ namespace App\Tankerkoenig\Application\UseCase\GasStationList;
 
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
 use App\Tankerkoenig\Domain\Enum\FuelType;
-use App\Tankerkoenig\Domain\Enum\Sort;
+use App\Tankerkoenig\Domain\Enum\SortBy;
 
 final class GetGasStationListRequest
 {
@@ -16,7 +16,7 @@ final class GetGasStationListRequest
         private readonly float $lng,
         private readonly float $radius,
         private readonly FuelType $type,
-        private readonly Sort $sort,
+        private readonly SortBy $sort,
     ) {
         if ($this->lat < -90 || $this->lat > 90) {
             throw InvalidRequestException::invalidLat($this->lat);
@@ -51,7 +51,7 @@ final class GetGasStationListRequest
         return $this->type;
     }
 
-    public function getSort(): Sort
+    public function getSort(): SortBy
     {
         return $this->sort;
     }

@@ -127,7 +127,7 @@ $client = new TankerkoenigClient(
 ```php
 use App\Tankerkoenig\Application\UseCase\GasStationList\GetGasStationListRequest;
 use App\Tankerkoenig\Domain\Enum\FuelType;
-use App\Tankerkoenig\Domain\Enum\Sort;
+use App\Tankerkoenig\Domain\Enum\SortBy;
 
 $request = new GetGasStationListRequest(
     lat   : 52.521918,

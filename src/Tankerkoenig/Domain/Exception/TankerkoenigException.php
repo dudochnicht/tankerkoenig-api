@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tankerkoenig\Application\Exception;
+namespace App\Tankerkoenig\Domain\Exception;
 
 final class TankerkoenigException extends \RuntimeException
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tankerkoenig\Infrastructure\Http;
 
-use App\Tankerkoenig\Application\Exception\TankerkoenigException;
+use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use App\Tankerkoenig\TankerkoenigConfig;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -33,7 +33,13 @@ final class TankerkoenigHttpClient
         $url   = sprintf('%s/%s?%s', $this->config->getBaseUrl(), $endpoint, $query);
 
         if ($this->config->isDebug()) {
-            $this->logger->debug('GET {url} with params {params}', ['url' => $url, 'params' => $params]);
+            $logParams = array_diff_key($params, ['apikey' => '']);
+            $logUrl    = strtok($url, '?') . '?' . http_build_query($logParams);
+
+            $this->logger->debug('GET {url} with params {params}', [
+                'url'    => $logUrl,
+                'params' => $logParams,
+            ]);
         }
 
         try {
@@ -54,7 +60,10 @@ final class TankerkoenigHttpClient
         }
 
         if ($this->config->isDebug()) {
-            $this->logger->debug('Returned {data}', ['data' => $data]);
+            $this->logger->debug('Returned status code {code} and message {message}', [
+                'code' => $response->getStatusCode() ?? '',
+                'message' => $data['message'] ?? ''
+            ]);
         }
 
         if (($data['ok'] ?? true) === false) {
