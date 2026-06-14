@@ -50,7 +50,7 @@ Get your API key at [creativecommons.tankerkoenig.de](https://creativecommons.ta
 ### Setup with Symfony HttpClient
 
 ```php
-use App\Tankerkoenig\TankerkoenigClient;
+use App\Tankerkoenig\TankerkoenigClientFactory;
 use App\Tankerkoenig\TankerkoenigConfig;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Component\HttpClient\Psr18Client;
@@ -58,7 +58,7 @@ use Symfony\Component\HttpClient\Psr18Client;
 $factory    = new Psr17Factory();
 $httpClient = new Psr18Client(null, $factory, $factory);
 
-$client = new TankerkoenigClient(
+$client = TankerkoenigClientFactory::create(
     httpClient     : $httpClient,
     requestFactory : $factory,
     config         : new TankerkoenigConfig(
@@ -72,7 +72,7 @@ $client = new TankerkoenigClient(
 ### Setup with Guzzle
 
 ```php
-use App\Tankerkoenig\TankerkoenigClient;
+use App\Tankerkoenig\TankerkoenigClientFactory;
 use App\Tankerkoenig\TankerkoenigConfig;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -80,7 +80,7 @@ use GuzzleHttp\Psr7\HttpFactory;
 $factory    = new HttpFactory();
 $httpClient = new Client();
 
-$client = new TankerkoenigClient(
+$client = TankerkoenigClientFactory::create(
     httpClient     : $httpClient,
     requestFactory : $factory,
     config         : new TankerkoenigConfig(
@@ -100,7 +100,7 @@ composer require monolog/monolog
 ```
 
 ```php
-use App\Tankerkoenig\TankerkoenigClient;
+use App\Tankerkoenig\TankerkoenigClientFactory;
 use App\Tankerkoenig\TankerkoenigConfig;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -110,7 +110,7 @@ $logger = new Logger('tankerkoenig');
 $logger->pushHandler(new StreamHandler('/var/logs/tankerkoenig.log', Level::Debug));
 $logger->pushHandler(new StreamHandler('php://stdout', Level::Debug));
 
-$client = new TankerkoenigClient(
+$client = TankerkoenigClientFactory::create(
     httpClient     : $httpClient,
     requestFactory : $factory,
     config         : new TankerkoenigConfig(
@@ -175,7 +175,7 @@ print_r($response);
 
 ```php
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
-use App\Tankerkoenig\Application\Exception\TankerkoenigException;
+use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 
 try {
     $response = $client->getGasStationList($request);
@@ -210,80 +210,6 @@ Requests validate themselves on construction — invalid objects cannot exist:
 | `lng`     | Must be between -180 and 180  |
 | `radius`  | Must be between 1 and 25 km   |
 | `ids`     | Must not be empty, max 10 IDs |
-
-## Architecture
-
-This library follows **Clean Architecture** principles with a strict dependency rule — inner layers
-never depend on outer layers.
-
-```
-src/
-└── Tankerkoenig/
-    ├── TankerkoenigClient.php       # Public entry point
-    ├── TankerkoenigConfig.php       # Configuration
-    ├── Domain/                      # Innermost layer — no dependencies
-    │   ├── Enum/
-    │   │   ├── FuelType.php
-    │   │   ├── Sort.php
-    │   │   └── Status.php
-    │   ├── Model/
-    │   │   ├── GasStationDetail/
-    │   │   │   ├── StationDetail.php
-    │   │   │   └── OpeningTime.php
-    │   │   ├── GasStationList/
-    │   │   │   ├── Station.php
-    │   │   │   └── StationList.php
-    │   │   └── GasStationPrice/
-    │   │       └── Price.php
-    │   └── Repository/
-    │       ├── GasStationDetailRepositoryInterface.php
-    │       ├── GasStationListRepositoryInterface.php
-    │       └── GasStationPricesRepositoryInterface.php
-    ├── Application/                 # Use cases — depends only on Domain
-    │   ├── Exception/
-    │   │   ├── InvalidRequestException.php
-    │   │   └── TankerkoenigException.php
-    │   └── UseCase/
-    │       ├── GasStationDetail/
-    │       │   ├── GasStationDetailUseCase.php
-    │       │   ├── GetGasStationDetailRequest.php
-    │       │   └── GetGasStationDetailResponse.php
-    │       ├── GasStationList/
-    │       └── GasStationPrice/
-    └── Infrastructure/              # Adapters — implements Domain ports
-        └── Http/
-            ├── TankerkoenigHttpClient.php
-            ├── Exception/
-            │   ├── ApiException.php
-            │   └── MappingException.php
-            ├── Mapper/
-            │   ├── MappingHelper.php
-            │   ├── GasStationDetail/
-            │   │   ├── StationDetailMapper.php
-            │   │   └── OpeningTimeMapper.php
-            │   ├── GasStationList/
-            │   │   ├── StationListMapper.php
-            │   └── GasStationPrice/
-            │       └── PriceMapper.php
-            ├── Trait/
-            │   └── CastHelper.php
-            └── Repository/
-                ├── GasStationDetailRepository.php
-                ├── GasStationListRepository.php
-                └── GasStationPricesRepository.php
-```
-
-### Dependency Rule
-
-```
-TankerkoenigClient → UseCase → [RepositoryInterface] ← Repository
-                                                              ↓
-                                                    TankerkoenigHttpClient
-                                                              ↓
-                                                          Mapper
-                                                              ↓
-                                                       Domain Model
-```
 
 ### Design Principles
 

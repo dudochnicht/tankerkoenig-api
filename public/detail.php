@@ -7,7 +7,7 @@ use App\Tankerkoenig\Application\UseCase\GasStationDetail\GetGasStationDetailReq
 use App\Tankerkoenig\Application\UseCase\GasStationDetail\GetGasStationDetailResponse;
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use Symfony\Component\Dotenv\Dotenv;
-use App\Tankerkoenig\TankerkoenigClient;
+use App\Tankerkoenig\TankerkoenigClientFactory;
 use App\Tankerkoenig\TankerkoenigConfig;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
@@ -35,7 +35,7 @@ try {
         debug : (bool) ($_ENV['TANKERKOENIG_DEBUG'] ?? false),
     );
 
-    $client = new TankerkoenigClient(
+    $tankerkoenigClient = TankerkoenigClientFactory::create(
         httpClient:     $httpClient,
         requestFactory: $factory,
         config:         $tankerkoenigConfig,
@@ -47,7 +47,7 @@ try {
     );
 
     /** @var GetGasStationDetailResponse $response */
-    $response = $client->getDetail($request);
+    $response = $tankerkoenigClient->getDetail($request);
 
     echo "<pre>";
     print_r($response);

@@ -14,76 +14,68 @@ use App\Tankerkoenig\Application\UseCase\GasStationPrice\GasStationPricesUseCase
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesRequest;
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesResponse;
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
-use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail\OpeningTimeMapper;
-use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail\StationDetailMapper;
-use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationList\StationListMapper;
-use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationPrice\PriceMapper;
-use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationDetailRepository;
-use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationListRepository;
-use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationPricesRepository;
-use App\Tankerkoenig\Infrastructure\Http\TankerkoenigHttpClient;
-use App\Tankerkoenig\TankerkoenigConfig;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 final class TankerkoenigClient
 {
-    private GasStationDetailUseCase $detailUseCase;
-    private GasStationListUseCase $listUseCase;
-    private GasStationPricesUseCase $pricesUseCase;
-
     public function __construct(
-        ClientInterface $httpClient,
-        RequestFactoryInterface $requestFactory,
-        TankerkoenigConfig $config,
+        private readonly GasStationDetailUseCase $detailUseCase,
+        private readonly GasStationListUseCase $listUseCase,
+        private readonly GasStationPricesUseCase $pricesUseCase,
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
-        $client = new TankerkoenigHttpClient($httpClient, $requestFactory, $config, $logger);
-
-        $this->detailUseCase = new GasStationDetailUseCase(
-            new GasStationDetailRepository(
-                $client,
-                new StationDetailMapper(
-                    new OpeningTimeMapper()
-                )
-            ),
-            $logger
-        );
-
-        $this->listUseCase = new GasStationListUseCase(
-            new GasStationListRepository(
-                $client,
-                new StationListMapper()
-            ),
-            $logger
-        );
-
-        $this->pricesUseCase = new GasStationPricesUseCase(
-            new GasStationPricesRepository(
-                $client,
-                new PriceMapper()
-            ),
-            $logger
-        );
     }
 
     /** @throws TankerkoenigException */
     public function getDetail(GetGasStationDetailRequest $req): GetGasStationDetailResponse
     {
-        return $this->detailUseCase->getDetail($req);
+        try {
+            return $this->detailUseCase->getDetail($req);
+
+        } catch (TankerkoenigException $e) {
+            $this->logger->error('Failed to fetch gas station detail', [
+                'station_id' => $req->getId(),
+                'exception'  => $e,
+            ]);
+
+            throw $e;
+        }
     }
 
     /** @throws TankerkoenigException */
     public function getList(GetGasStationListRequest $req): GetGasStationListResponse
     {
-        return $this->listUseCase->getList($req);
+        try {
+            return $this->listUseCase->getList($req);
+
+        } catch (TankerkoenigException $e) {
+            $this->logger->error('Failed to fetch gas station list', [
+                'lat'       => $req->getLat(),
+                'lng'       => $req->getLng(),
+                'radius'    => $req->getRadius(),
+                'type'      => $req->getType()->value,
+                'sort'      => $req->getSort()->value,
+                'exception' => $e,
+            ]);
+
+            throw $e;
+        }
     }
 
     /** @throws TankerkoenigException */
     public function getPrices(GetGasStationPricesRequest $req): GetGasStationPricesResponse
     {
-        return $this->pricesUseCase->getPrices($req);
+        try {
+            return $this->pricesUseCase->getPrices($req);
+
+        } catch (TankerkoenigException $e) {
+            $this->logger->error('Failed to fetch gas station prices', [
+                'station_ids' => $req->getIds(),
+                'exception'   => $e,
+            ]);
+
+            throw $e;
+        }
     }
 }

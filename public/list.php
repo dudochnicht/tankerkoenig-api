@@ -9,7 +9,7 @@ use Symfony\Component\Dotenv\Dotenv;
 use App\Tankerkoenig\Domain\Enum\FuelType;
 use App\Tankerkoenig\Domain\Enum\SortBy;
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
-use App\Tankerkoenig\TankerkoenigClient;
+use App\Tankerkoenig\TankerkoenigClientFactory;
 use App\Tankerkoenig\TankerkoenigConfig;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
@@ -37,7 +37,7 @@ try {
         debug : (bool) ($_ENV['TANKERKOENIG_DEBUG'] ?? false),
     );
 
-    $client = new TankerkoenigClient(
+    $tankerkoenigClient = TankerkoenigClientFactory::create(
         httpClient:     $httpClient,
         requestFactory: $factory,
         config:         $tankerkoenigConfig,
@@ -53,7 +53,7 @@ try {
     );
 
     /** @var GetGasStationListResponse $response */
-    $response = $client->getList($request);
+    $response = $tankerkoenigClient->getList($request);
 
     echo "<pre>";
     print_r($response);

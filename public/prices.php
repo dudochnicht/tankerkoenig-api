@@ -7,7 +7,7 @@ use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesRequ
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesResponse;
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use Symfony\Component\Dotenv\Dotenv;
-use App\Tankerkoenig\TankerkoenigClient;
+use App\Tankerkoenig\TankerkoenigClientFactory;
 use App\Tankerkoenig\TankerkoenigConfig;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
@@ -35,7 +35,7 @@ try {
         debug : true,
     );
 
-    $client = new TankerkoenigClient(
+    $tankerkoenigClient = TankerkoenigClientFactory::create(
         httpClient:     $httpClient,
         requestFactory: $factory,
         config:         $tankerkoenigConfig,
@@ -52,7 +52,7 @@ try {
     );
 
     /** @var GetGasStationPricesResponse $response */
-    $response = $client->getPrices($request);
+    $response = $tankerkoenigClient->getPrices($request);
 
     echo "<pre>";
     print_r($response);
