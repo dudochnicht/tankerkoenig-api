@@ -38,7 +38,7 @@ final class GasStationPricesRepository implements GasStationPricesRepositoryInte
             return $prices;
 
         } catch (\Throwable $e) {
-            throw TankerkoenigException::mappingFailed('GasStationList', $e);
+            throw TankerkoenigException::mappingFailed('GasStationPrice', $e);
         }
     }
 

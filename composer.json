@@ -4,11 +4,7 @@
   "type": "library",
   "description": "A PHP client library for the Tankerkoenig API to retrieve gas station data, prices and details based on location.",
   "keywords": [
-    "tankerkoenig",
-    "gas-station",
-    "fuel-prices",
-    "api-client",
-    "psr-18"
+    "tankerkoenig"
   ],
   "homepage": "https://github.com/dudochnicht/tankerkoenig-api",
   "license": "MIT",
@@ -23,12 +19,14 @@
     "psr/http-client": "^1.0",
     "psr/http-factory": "^1.0",
     "psr/log": "^3.0",
-    "symfony/dotenv": "^7.4"
+    "psr/simple-cache": "^3.0"
   },
   "require-dev": {
     "monolog/monolog": "^3.10",
     "nyholm/psr7": "^1.8",
     "symfony/http-client": "^7.0",
+    "symfony/cache": "^7.4",
+    "symfony/dotenv": "^7.4",
     "phpstan/phpstan": "^2.2",
     "phpunit/phpunit": "^11.5"
   },
@@ -40,7 +38,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "App\\Tests\\": "tests/"
+      "Tests\\": "tests/"
     }
   },
   "config": {

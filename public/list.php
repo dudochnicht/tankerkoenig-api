@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
 use App\Tankerkoenig\Application\UseCase\GasStationList\GetGasStationListRequest;
 use App\Tankerkoenig\Application\UseCase\GasStationList\GetGasStationListResponse;
+use App\Tankerkoenig\CachingTankerkoenigClient;
 use Symfony\Component\Dotenv\Dotenv;
 use App\Tankerkoenig\Domain\Enum\FuelType;
 use App\Tankerkoenig\Domain\Enum\SortBy;
@@ -15,6 +16,8 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\HttpClient\Psr18Client;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
@@ -23,6 +26,16 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 try {
 
+    // create symfony cache
+    $cache = new Psr16Cache(
+        new FilesystemAdapter(
+            namespace:       'tankerkoenig',
+            defaultLifetime: 300,
+            directory:       dirname(__DIR__) . '/var/cache',
+        )
+    );
+
+    // monolog
     $logger = new Logger('tankerkoenig');
 
     $logger->pushHandler(new StreamHandler(dirname(__DIR__) . '/var/logs/tankerkoenig.log', Level::Debug));
@@ -37,11 +50,20 @@ try {
         debug : (bool) ($_ENV['TANKERKOENIG_DEBUG'] ?? false),
     );
 
-    $tankerkoenigClient = TankerkoenigClientFactory::create(
+    // Create the tankerkoenig client
+    $innerTankerkoenigClient = TankerkoenigClientFactory::create(
         httpClient:     $httpClient,
         requestFactory: $factory,
         config:         $tankerkoenigConfig,
         logger:         $logger,
+    );
+
+    // Wrap the inner client with the caching client
+    $tankerkoenigClient = new CachingTankerkoenigClient(
+        inner : $innerTankerkoenigClient,
+        cache : $cache,
+        ttl   : 300,
+        logger: $logger,
     );
 
     $request = new GetGasStationListRequest(
@@ -56,7 +78,7 @@ try {
     $response = $tankerkoenigClient->getList($request);
 
     echo "<pre>";
-    print_r($response);
+    print_r($response->getStations());
     echo "</pre>";
 
 } catch (InvalidRequestException $e) {

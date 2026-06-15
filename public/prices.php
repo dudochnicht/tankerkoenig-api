@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesRequest;
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GetGasStationPricesResponse;
+use App\Tankerkoenig\CachingTankerkoenigClient;
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use Symfony\Component\Dotenv\Dotenv;
 use App\Tankerkoenig\TankerkoenigClientFactory;
@@ -13,6 +14,8 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\HttpClient\Psr18Client;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
@@ -21,6 +24,16 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 try {
 
+    // create symfony cache
+    $cache = new Psr16Cache(
+        new FilesystemAdapter(
+            namespace:       'tankerkoenig',
+            defaultLifetime: 300,
+            directory:       dirname(__DIR__) . '/var/cache',
+        )
+    );
+
+    // monolog
     $logger = new Logger('tankerkoenig');
 
     $logger->pushHandler(new StreamHandler(dirname(__DIR__) . '/var/logs/tankerkoenig.log', Level::Debug));
@@ -32,22 +45,28 @@ try {
     $tankerkoenigConfig = new TankerkoenigConfig(
         apiKey : $_ENV['TANKERKOENIG_API_KEY'] ?? throw new \RuntimeException('TANKERKOENIG_API_KEY is not set'),
         baseUrl: $_ENV['TANKERKOENIG_BASE_URL'] ?? throw new \RuntimeException('TANKERKOENIG_BASE_URL is not set'),
-        debug : true,
+        debug : (bool) ($_ENV['TANKERKOENIG_DEBUG'] ?? false),
     );
 
-    $tankerkoenigClient = TankerkoenigClientFactory::create(
+    // Create the tankerkoenig client
+    $innerTankerkoenigClient = TankerkoenigClientFactory::create(
         httpClient:     $httpClient,
         requestFactory: $factory,
         config:         $tankerkoenigConfig,
         logger:         $logger,
     );
 
+    // Wrap the inner client with the caching client
+    $tankerkoenigClient = new CachingTankerkoenigClient(
+        inner : $innerTankerkoenigClient,
+        cache : $cache,
+        ttl   : 300,
+        logger: $logger,
+    );
+
     $request = new GetGasStationPricesRequest(
         ids: [
-            '60c0eefa-d2a8-4f5c-82cc-b5244ecae955',
-            '446bdcf5-9f75-47fc-9cfa-2c3d6fda1c3b',
-            '4429a7d9-fb2d-4c29-8cfe-2ca90323f9f8',
-            '44444444-4444-4444-4444-444444444444',
+            '24a381e3-0d72-416d-bfd8-b2f65f6e5802'
         ],
     );
 
@@ -55,7 +74,7 @@ try {
     $response = $tankerkoenigClient->getPrices($request);
 
     echo "<pre>";
-    print_r($response);
+    print_r($response->getPrices());
     echo "</pre>";
 
 } catch (InvalidRequestException $e) {

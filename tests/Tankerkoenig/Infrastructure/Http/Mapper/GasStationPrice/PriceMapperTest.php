@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Tankerkoenig\Infrastructure\Http\Mapper\GasStationPrice;
+namespace Tests\Tankerkoenig\Infrastructure\Http\Mapper\GasStationPrice;
 
 use App\Tankerkoenig\Infrastructure\Http\Exception\MappingException;
 use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationPrice\PriceMapper;

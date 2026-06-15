@@ -6,6 +6,6 @@ namespace App\Tankerkoenig\Domain\Enum;
 
 enum SortBy: string
 {
-    case PRICE    = 'price';
-    case DISTANCE = 'dist';
+    case PRICE = 'price';
+    case DIST  = 'dist';
 }

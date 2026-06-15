@@ -3,13 +3,15 @@
 A PHP library for the [Tankerkoenig API](https://creativecommons.tankerkoenig.de) built with Clean
 Architecture principles.
 
-The library is HTTP client agnostic — bring your own PSR-18 compatible implementation.
+The library is HTTP client, Cache, and Logger agnostic — bring your own PSR-compatible
+implementations.
 
 ## Requirements
 
 - PHP 8.2+
 - PSR-18 HTTP Client implementation
 - PSR-17 HTTP Factory implementation
+- PSR-16 Simple Cache implementation
 
 ## Installation
 
@@ -19,12 +21,12 @@ cd tankerkoenig
 composer install
 ```
 
-Then install a PSR-18 compatible HTTP client of your choice:
+Then install a PSR-18 compatible HTTP client and a PSR-16 cache provider of your choice:
 
-### Symfony HttpClient
+### Symfony Component Suite (Recommended)
 
 ```bash
-composer require symfony/http-client nyholm/psr7
+composer require symfony/http-client symfony/cache nyholm/psr7
 ```
 
 ### Guzzle
@@ -47,7 +49,37 @@ Get your API key at [creativecommons.tankerkoenig.de](https://creativecommons.ta
 
 ## Usage
 
-### Setup with Symfony HttpClient
+Depending on your project setup, you can either let your Framework handle the dependency graph
+automatically (Recommended) or use the built-in Factory for Plain PHP.
+
+### Modern Frameworks (Symfony, Laravel, etc.)
+
+Because this library strictly follows Dependency Inversion and Constructor Injection, modern DI
+containers will automatically resolve all nested dependencies (UseCases, Repositories, Mappers) via
+Autowiring. You do not need the Factory.
+
+### Symfony Setup (config/services.yaml)
+
+Just register the Configuration DTO. Symfony handles the rest, including mapping the interface:
+
+```yaml
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  App\Tankerkoenig\TankerkoenigConfig:
+    arguments:
+      $apiKey: '%env(TANKERKOENIG_API_KEY)%'
+      $baseUrl: '%env(TANKERKOENIG_BASE_URL)%'
+      $debug: '%env(bool:TANKERKOENIG_DEBUG_MODE)%'
+
+  App\Tankerkoenig\TankerkoenigClientInterface: '@App\Tankerkoenig\TankerkoenigClient'
+```
+
+Now simply type-hint `TankerkoenigClientInterface` anywhere (e.g., in your Controllers or Services).
+
+### Plain PHP (Using the Factory)
 
 ```php
 use App\Tankerkoenig\TankerkoenigClientFactory;
@@ -69,58 +101,52 @@ $client = TankerkoenigClientFactory::create(
 );
 ```
 
-### Setup with Guzzle
+## Advanced Features
+
+### Caching (PSR-16 Decorator)
+
+Since fuel prices do not change every second, you should wrap your client inside the
+`CachingTankerkoenigClient` decorator. It uses the structural Decorator Pattern so you can intercept
+requests transparently.
 
 ```php
-use App\Tankerkoenig\TankerkoenigClientFactory;
-use App\Tankerkoenig\TankerkoenigConfig;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\HttpFactory;
+use App\Tankerkoenig\CachingTankerkoenigClient;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 
-$factory    = new HttpFactory();
-$httpClient = new Client();
+$psr16Cache = new Psr16Cache(
+    new FilesystemAdapter(namespace: 'tankerkoenig', defaultLifetime: 300)
+);
 
-$client = TankerkoenigClientFactory::create(
-    httpClient     : $httpClient,
-    requestFactory : $factory,
-    config         : new TankerkoenigConfig(
-        apiKey : $_ENV['TANKERKOENIG_API_KEY'],
-        baseUrl: $_ENV['TANKERKOENIG_BASE_URL'],
-        debug  : (bool) $_ENV['TANKERKOENIG_DEBUG_MODE'],
-    ),
+// Wrap your existing client instance (Works with both Approach A & B)
+$client = new CachingTankerkoenigClient(
+    inner: $client, // The base TankerkoenigClient
+    cache: $psr16Cache,
+    ttl  : 300
 );
 ```
 
-### Optional: Logger (PSR-3)
+### Logging (PSR-3)
 
-The client accepts any PSR-3 compatible logger — for example Monolog:
+Pass any PSR-3 compatible logger (like Monolog) into the Factory or let your framework wire it
+automatically:
 
 ```bash
 composer require monolog/monolog
 ```
 
 ```php
-use App\Tankerkoenig\TankerkoenigClientFactory;
-use App\Tankerkoenig\TankerkoenigConfig;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 
 $logger = new Logger('tankerkoenig');
 $logger->pushHandler(new StreamHandler('/var/logs/tankerkoenig.log', Level::Debug));
-$logger->pushHandler(new StreamHandler('php://stdout', Level::Debug));
 
-$client = TankerkoenigClientFactory::create(
-    httpClient     : $httpClient,
-    requestFactory : $factory,
-    config         : new TankerkoenigConfig(
-        apiKey : $_ENV['TANKERKOENIG_API_KEY'],
-        baseUrl: $_ENV['TANKERKOENIG_BASE_URL'],
-        debug  : (bool) $_ENV['TANKERKOENIG_DEBUG_MODE'],
-    ),
-    logger         : $logger,
-);
+// Pass to factory via the `logger:` parameter
 ```
+
+# API Examples
 
 ## Gas Station List
 
@@ -134,12 +160,12 @@ $request = new GetGasStationListRequest(
     lng   : 13.413215,
     radius: 5.0,
     type  : FuelType::DIESEL,
-    sort  : Sort::PRICE,
+    sort  : SortBy::PRICE,
 );
 
 $response = $client->getList($request);
 
-print_r($response);
+print_r($response->getStations());
 ```
 
 ## Gas Station Detail
@@ -153,7 +179,7 @@ $request  = new GetGasStationDetailRequest(
 
 $response = $client->getDetail($request);
 
-print_r($response);
+print_r($response->getStation());
 ```
 
 ## Gas Station Prices
@@ -168,7 +194,7 @@ $request = new GetGasStationPricesRequest(ids: [
 
 $response = $client->getPrices($request);
 
-print_r($response);
+print_r($response->getPrices());
 ```
 
 ## Error Handling
@@ -178,7 +204,7 @@ use App\Tankerkoenig\Application\Exception\InvalidRequestException;
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 
 try {
-    $response = $client->getGasStationList($request);
+    $response = $client->getList($request);
 
 } catch (InvalidRequestException $e) {
     // Invalid request parameters (e.g. radius > 25 km, empty IDs)
@@ -249,7 +275,3 @@ composer phpunit
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
-
-## Data License
-
-Tankerkoenig data is licensed under [CC BY 4.0](https://creativecommons.tankerkoenig.de).

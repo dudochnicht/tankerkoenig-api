@@ -7,10 +7,7 @@ namespace App\Tankerkoenig;
 use App\Tankerkoenig\Application\UseCase\GasStationDetail\GasStationDetailUseCase;
 use App\Tankerkoenig\Application\UseCase\GasStationList\GasStationListUseCase;
 use App\Tankerkoenig\Application\UseCase\GasStationPrice\GasStationPricesUseCase;
-use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail\OpeningTimeMapper;
-use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail\StationDetailMapper;
-use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationList\StationListMapper;
-use App\Tankerkoenig\Infrastructure\Http\Mapper\GasStationPrice\PriceMapper;
+use App\Tankerkoenig\Infrastructure\Http\Mapper\MapperRegistry;
 use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationDetailRepository;
 use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationListRepository;
 use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationPricesRepository;
@@ -27,7 +24,7 @@ final class TankerkoenigClientFactory
         RequestFactoryInterface $requestFactory,
         TankerkoenigConfig $config,
         LoggerInterface $logger = new NullLogger()
-    ): TankerkoenigClient {
+    ): TankerkoenigClientInterface {
 
         $internalHttpClient = new TankerkoenigHttpClient(
             $httpClient,
@@ -36,20 +33,11 @@ final class TankerkoenigClientFactory
             $logger
         );
 
-        $detailRepository = new GasStationDetailRepository(
-            $internalHttpClient,
-            new StationDetailMapper(new OpeningTimeMapper())
-        );
+        $registry = new MapperRegistry();
 
-        $listRepository = new GasStationListRepository(
-            $internalHttpClient,
-            new StationListMapper()
-        );
-
-        $pricesRepository = new GasStationPricesRepository(
-            $internalHttpClient,
-            new PriceMapper()
-        );
+        $detailRepository = new GasStationDetailRepository($internalHttpClient, $registry->getStationDetailMapper());
+        $listRepository   = new GasStationListRepository($internalHttpClient, $registry->getStationListMapper());
+        $pricesRepository = new GasStationPricesRepository($internalHttpClient, $registry->getPriceMapper());
 
         $detailUseCase = new GasStationDetailUseCase($detailRepository);
         $listUseCase   = new GasStationListUseCase($listRepository);

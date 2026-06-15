@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Tankerkoenig\Application\UseCase\GasStationList;
+namespace Tests\Tankerkoenig\Application\UseCase\GasStationList;
 
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
 use App\Tankerkoenig\Application\UseCase\GasStationList\GetGasStationListRequest;

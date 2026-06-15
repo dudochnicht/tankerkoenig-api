@@ -17,7 +17,7 @@ use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-final class TankerkoenigClient
+final class TankerkoenigClient implements TankerkoenigClientInterface
 {
     public function __construct(
         private readonly GasStationDetailUseCase $detailUseCase,

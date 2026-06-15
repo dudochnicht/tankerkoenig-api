@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail;
+namespace Tests\Tankerkoenig\Infrastructure\Http\Mapper\GasStationDetail;
 
 use App\Tankerkoenig\Domain\Model\GasStationDetail\StationDetail;
 use App\Tankerkoenig\Infrastructure\Http\Exception\MappingException;
