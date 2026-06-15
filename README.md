@@ -239,15 +239,12 @@ Requests validate themselves on construction — invalid objects cannot exist:
 
 ### Design Principles
 
-- **Clean Architecture** — strict unidirectional dependency rule
-- **Dependency Inversion** — use cases depend on repository interfaces, never on concrete
-  implementations
-- **PSR-18 / PSR-17** — HTTP client agnostic, bring your own implementation
-- **PSR-3** — logger agnostic, bring your own implementation
-- **Fail Fast** — request validation on construction, invalid objects cannot exist
-- **Immutability** — all models and requests are `readonly` and `final`
-- **Single Exception Surface** — `TankerkoenigException` wraps all infrastructure errors; original
-  cause preserved via `getPrevious()`
+- **Clean Architecture** — strict unidirectional dependency rules.
+- **Decorator Pattern** — transparent Caching implementation via `CachingTankerkoenigClient`.
+- **Dependency Inversion** — use cases depend on repository interfaces, never on infrastructure.
+- **PSR Standard Compliance** — decoupled PSR-18, PSR-17, PSR-16, and PSR-3.
+- **Fail Fast** — immediate domain input validation.
+- **Immutability** — models and requests are `readonly` and `final`.
 
 ## Docker
 
