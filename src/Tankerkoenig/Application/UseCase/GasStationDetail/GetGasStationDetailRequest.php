@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tankerkoenig\Application\UseCase\GasStationDetail;
 
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
+use App\Tankerkoenig\Domain\Validation\Uuid;
 
 final class GetGasStationDetailRequest
 {
@@ -12,8 +13,8 @@ final class GetGasStationDetailRequest
     public function __construct(
         private readonly string $id,
     ) {
-        if (empty($this->id)) {
-            throw InvalidRequestException::emptyId();
+        if (!Uuid::isValid($id)) {
+            throw InvalidRequestException::invalidId($id);
         }
     }
 

@@ -41,7 +41,6 @@ Create a `.env` file in your project root:
 
 ```env
 TANKERKOENIG_API_KEY=your-api-key
-TANKERKOENIG_BASE_URL=base-url-from-tankerkoenig
 TANKERKOENIG_DEBUG_MODE=false
 ```
 
@@ -71,7 +70,6 @@ services:
   App\Tankerkoenig\TankerkoenigConfig:
     arguments:
       $apiKey: '%env(TANKERKOENIG_API_KEY)%'
-      $baseUrl: '%env(TANKERKOENIG_BASE_URL)%'
       $debug: '%env(bool:TANKERKOENIG_DEBUG_MODE)%'
 
   App\Tankerkoenig\TankerkoenigClientInterface: '@App\Tankerkoenig\TankerkoenigClient'
@@ -95,7 +93,6 @@ $client = TankerkoenigClientFactory::create(
     requestFactory : $factory,
     config         : new TankerkoenigConfig(
         apiKey : $_ENV['TANKERKOENIG_API_KEY'],
-        baseUrl: $_ENV['TANKERKOENIG_BASE_URL'],
         debug  : (bool) $_ENV['TANKERKOENIG_DEBUG_MODE'],
     ),
 );

@@ -7,9 +7,9 @@ use App\Tankerkoenig\Application\UseCase\GasStationDetail\GetGasStationDetailReq
 use App\Tankerkoenig\Application\UseCase\GasStationDetail\GetGasStationDetailResponse;
 use App\Tankerkoenig\CachingTankerkoenigClient;
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
+use App\Tankerkoenig\Infrastructure\Http\TankerkoenigConfig;
 use Symfony\Component\Dotenv\Dotenv;
 use App\Tankerkoenig\TankerkoenigClientFactory;
-use App\Tankerkoenig\TankerkoenigConfig;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
@@ -44,7 +44,6 @@ try {
 
     $tankerkoenigConfig = new TankerkoenigConfig(
         apiKey : $_ENV['TANKERKOENIG_API_KEY'] ?? throw new \RuntimeException('TANKERKOENIG_API_KEY is not set'),
-        baseUrl: $_ENV['TANKERKOENIG_BASE_URL'] ?? throw new \RuntimeException('TANKERKOENIG_BASE_URL is not set'),
         debug : (bool) ($_ENV['TANKERKOENIG_DEBUG'] ?? false),
     );
 
@@ -65,7 +64,7 @@ try {
     );
 
     $request = new GetGasStationDetailRequest(
-        id   : '24a381e3-0d72-416d-bfd8-b2f65f6e5802',
+        id   : '474e5046-deaf-4f9b-9a32-9797b778f047',
     );
 
     /** @var GetGasStationDetailResponse $response */

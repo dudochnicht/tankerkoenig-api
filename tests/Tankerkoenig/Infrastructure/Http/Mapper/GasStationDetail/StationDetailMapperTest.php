@@ -29,9 +29,21 @@ final class StationDetailMapperTest extends TestCase
             'postCode'     => 84152,
             'place'        => 'MENGKOFEN',
             'openingTimes' => [
-                ['text' => 'Mo-Fr',    'start' => '06:00:00', 'end' => '22:30:00'],
-                ['text' => 'Samstag',  'start' => '07:00:00', 'end' => '22:00:00'],
-                ['text' => 'Sonntag',  'start' => '08:00:00', 'end' => '22:00:00'],
+                [
+                    'text'  => 'Mo-Fr',
+                    'start' => '06:00:00',
+                    'end'   => '22:30:00'
+                    ],
+                [
+                    'text'  => 'Samstag',
+                    'start' => '07:00:00',
+                    'end'   => '22:00:00'
+                ],
+                [
+                    'text'  => 'Sonntag',
+                    'start' => '08:00:00',
+                    'end'   => '22:00:00'
+                ],
             ],
             'overrides' => [
                 '13.04.2017, 15:00:00 - 13.11.2017, 15:00:00: geschlossen'
@@ -70,8 +82,8 @@ final class StationDetailMapperTest extends TestCase
 
         $this->assertCount(3, $openingTimes);
         $this->assertSame('Mo-Fr', $openingTimes[0]->getText());
-        $this->assertSame('06:00:00', $openingTimes[0]->getStart());
-        $this->assertSame('22:30:00', $openingTimes[0]->getEnd());
+        $this->assertSame('06:00:00', $openingTimes[0]->getStart()->format('H:i:s'));
+        $this->assertSame('22:30:00', $openingTimes[0]->getEnd()->format('H:i:s'));
     }
 
     public function testMapOverrides(): void

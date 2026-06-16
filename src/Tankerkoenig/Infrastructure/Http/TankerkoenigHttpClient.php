@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tankerkoenig\Infrastructure\Http;
 
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
-use App\Tankerkoenig\TankerkoenigConfig;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Log\LoggerInterface;
@@ -13,6 +12,8 @@ use Psr\Log\NullLogger;
 
 final class TankerkoenigHttpClient
 {
+    public const DEFAULT_BASE_URL = 'https://creativecommons.tankerkoenig.de';
+
     public function __construct(
         private readonly ClientInterface $httpClient,
         private readonly RequestFactoryInterface $requestFactory,
@@ -30,7 +31,7 @@ final class TankerkoenigHttpClient
     {
         $params['apikey'] = $this->config->getApiKey();
         $query = http_build_query($params);
-        $url   = sprintf('%s/%s?%s', $this->config->getBaseUrl(), $endpoint, $query);
+        $url   = sprintf('%s/%s?%s', $this::DEFAULT_BASE_URL, $endpoint, $query);
 
         if ($this->config->isDebug()) {
             $logParams = array_diff_key($params, ['apikey' => '']);

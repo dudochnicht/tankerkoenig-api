@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tankerkoenig\Application\UseCase\GasStationPrice;
 
 use App\Tankerkoenig\Application\Exception\InvalidRequestException;
+use App\Tankerkoenig\Domain\Validation\Uuid;
 
 final class GetGasStationPricesRequest
 {
@@ -15,8 +16,16 @@ final class GetGasStationPricesRequest
     public function __construct(
         private readonly array $ids
     ) {
+
         if (empty($this->ids)) {
-            throw InvalidRequestException::emptyIds();
+            throw throw InvalidRequestException::emptyIds();
+        }
+
+        // check if uuid is valid
+        foreach ($this->ids as $id) {
+            if (!Uuid::isValid($id)) {
+                throw InvalidRequestException::invalidId($id);
+            }
         }
 
         if (count($this->ids) > 10) {

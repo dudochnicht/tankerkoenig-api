@@ -20,8 +20,8 @@ final class OpeningTimeMapper
     {
         return new OpeningTime(
             text : self::getString($a, 'text'),
-            start: self::getString($a, 'start'),
-            end  : self::getString($a, 'end'),
+            start: self::getDateTimeImmutable($a, 'start'),
+            end  : self::getDateTimeImmutable($a, 'end'),
         );
     }
 }

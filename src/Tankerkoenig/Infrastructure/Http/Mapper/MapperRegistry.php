@@ -6,6 +6,7 @@ namespace App\Tankerkoenig\Infrastructure\Http\Mapper;
 
 final class MapperRegistry
 {
+    /** @var array<string, mixed> */
     private array $instances = [];
 
     public function getOpeningTimeMapper(): GasStationDetail\OpeningTimeMapper

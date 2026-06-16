@@ -101,4 +101,17 @@ trait MappingHelper
         }
         return $value;
     }
+
+    /**
+     * @param array<mixed> $a
+     */
+    private static function getDateTimeImmutable(array $a, string $field): \DateTimeImmutable
+    {
+        $value = $a[$field] ?? throw MappingException::missingField($field);
+        if (!is_string($value)) {
+            throw MappingException::invalidType($field, 'string', gettype($value));
+        }
+        return new \DateTimeImmutable($value);
+    }
+
 }

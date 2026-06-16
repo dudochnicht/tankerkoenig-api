@@ -30,8 +30,8 @@ final class CachingTankerkoenigClientTest extends TestCase
             postCode    : 84152,
             openingTimes: [new OpeningTime(
                 text : 'Mo-Fr',
-                start: '06:00:00',
-                end  : '22:30:00',
+                start: new \DateTimeImmutable('06:00:00'),
+                end  : new \DateTimeImmutable('22:30:00'),
             )],
             overrides: ['13.04.2017, 15:00:00 - 13.11.2017, 15:00:00: geschlossen'],
             wholeDay : false,
@@ -75,8 +75,8 @@ final class CachingTankerkoenigClientTest extends TestCase
             postCode    : 84152,
             openingTimes: [new OpeningTime(
                 text : 'Mo-Fr',
-                start: '06:00:00',
-                end  : '22:30:00',
+                start: new \DateTimeImmutable('06:00:00'),
+                end  : new \DateTimeImmutable('22:30:00'),
             )],
             overrides: ['13.04.2017, 15:00:00 - 13.11.2017, 15:00:00: geschlossen'],
             wholeDay : false,

@@ -11,6 +11,7 @@ use App\Tankerkoenig\Infrastructure\Http\Mapper\MapperRegistry;
 use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationDetailRepository;
 use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationListRepository;
 use App\Tankerkoenig\Infrastructure\Http\Repository\GasStationPricesRepository;
+use App\Tankerkoenig\Infrastructure\Http\TankerkoenigConfig;
 use App\Tankerkoenig\Infrastructure\Http\TankerkoenigHttpClient;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;

@@ -6,14 +6,14 @@ namespace App\Tankerkoenig\Application\Exception;
 
 final class InvalidRequestException extends \InvalidArgumentException
 {
-    public static function emptyId(): self
-    {
-        return new self('id must not be empty');
-    }
-
     public static function emptyIds(): self
     {
         return new self('ids must not be empty');
+    }
+
+    public static function invalidId(string $id): self
+    {
+        return new self(sprintf("id '%s' is not a valid uuid", $id));
     }
 
     public static function tooManyIds(int $max, int $given): self

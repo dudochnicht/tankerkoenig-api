@@ -8,8 +8,8 @@ final class OpeningTime
 {
     public function __construct(
         private readonly string $text,
-        private readonly string $start,
-        private readonly string $end
+        private readonly \DateTimeImmutable $start,
+        private readonly \DateTimeImmutable $end
     ) {
     }
 
@@ -18,12 +18,12 @@ final class OpeningTime
         return $this->text;
     }
 
-    public function getStart(): string
+    public function getStart(): \DateTimeImmutable
     {
         return $this->start;
     }
 
-    public function getEnd(): string
+    public function getEnd(): \DateTimeImmutable
     {
         return $this->end;
     }

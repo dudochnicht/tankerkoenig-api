@@ -10,8 +10,8 @@ use Symfony\Component\Dotenv\Dotenv;
 use App\Tankerkoenig\Domain\Enum\FuelType;
 use App\Tankerkoenig\Domain\Enum\SortBy;
 use App\Tankerkoenig\Domain\Exception\TankerkoenigException;
+use App\Tankerkoenig\Infrastructure\Http\TankerkoenigConfig;
 use App\Tankerkoenig\TankerkoenigClientFactory;
-use App\Tankerkoenig\TankerkoenigConfig;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
@@ -46,7 +46,6 @@ try {
 
     $tankerkoenigConfig = new TankerkoenigConfig(
         apiKey : $_ENV['TANKERKOENIG_API_KEY'] ?? throw new \RuntimeException('TANKERKOENIG_API_KEY is not set'),
-        baseUrl: $_ENV['TANKERKOENIG_BASE_URL'] ?? throw new \RuntimeException('TANKERKOENIG_BASE_URL is not set'),
         debug : (bool) ($_ENV['TANKERKOENIG_DEBUG'] ?? false),
     );
 
